@@ -1,0 +1,9 @@
+create table Usuario(
+    idMedico int auto_increment primary key,
+    nomeCompleto varchar(255) not null,
+    email varchar(150) not null,
+    username varchar(150) not null,
+    senha varchar(50) not null,
+    createdAt DATETIME default CURRENT_TIMESTAMP,
+    updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);

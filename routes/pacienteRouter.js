@@ -1,6 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const pacienteController = require('../controllers/PacienteController');
+const loginController = require('../controllers/UsuarioController');
+
+router.get('/', loginController.exibirLogin);
+
+router.post('/', loginController.processarLogin);
+
 
 // Listar todos os pacientes
 router.get('/listar', pacienteController.listarPacientes);

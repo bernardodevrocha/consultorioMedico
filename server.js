@@ -7,6 +7,7 @@ const mysql = require('mysql2');
 
 const Paciente = require('./models/Pacientes');
 const pacienteRouter = require('./routes/pacienteRouter');
+const loginRouter = require('./routes/loginRouter');
 
 app.use(bodyparser.urlencoded({extended: true}));
 app.use(bodyparser.json());
@@ -22,8 +23,7 @@ app.set('views', path.join(__dirname, 'views'));
 
 // As Rotas
 app.use('/pacientes', pacienteRouter);
-// app.use('/agendamentos', agendamentoRouter);
-// app.use('/usuarios', usuarioRouter);
+app.use('/', loginRouter);
 
 app.get('/', (req, res) => {
     if(req.session.user){
