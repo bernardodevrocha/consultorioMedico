@@ -5,9 +5,10 @@ const bodyparser = require('body-parser');
 const session = require('express-session');
 const mysql = require('mysql2');
 
-const Paciente = require('./models/Pacientes');
+const models = require('./models/main');
 const pacienteRouter = require('./routes/pacienteRouter');
 const loginRouter = require('./routes/loginRouter');
+const menuRouter = require('./routes/menuRouter');
 
 app.use(bodyparser.urlencoded({extended: true}));
 app.use(bodyparser.json());
@@ -24,6 +25,7 @@ app.set('views', path.join(__dirname, 'views'));
 // As Rotas
 app.use('/pacientes', pacienteRouter);
 app.use('/', loginRouter);
+app.use('/menu', menuRouter);
 
 app.get('/', (req, res) => {
     if(req.session.user){
@@ -40,7 +42,7 @@ app.use((req, res, next) => {
 
 async function sincronizaBanco(){
     try{
-        await Paciente.sync({alter: true});
+        await models.sync({alter: true});
         console.log("Tabela Pacientes sincronizada com sucesso!");
     } catch(error){
         console.log("Erro ao sincronizar a tabela: ", error);
