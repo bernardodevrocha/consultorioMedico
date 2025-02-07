@@ -1,59 +1,50 @@
 const express = require('express');
-const session = require('express-session');
-const bcrypt = require('bcrypt');
-const db = require('./config/db');
+const app = express();
 const path = require('path');
 
-const app = express();
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
 
 app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
-
-app.use(session({
-  secret: 'palavra-secreta',
-  resave: false,
-  saveUnitialized: false
-}));
-
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs');
+app.use(express.static('public'));
 
 app.get('/', (req, res) => {
-  res.render('login', {erro: null});
+  res.render('index');
 });
 
-app.post('/login', (req, res) => {
-  const { username, password } = req.body;
+app.post('/', (req, res) => {
+  const botao = req.body.botao;
 
-  db.get('SELECT * FROM users WHERE username = ?', [username], async (err, user) => {
-    if(err) return res.status(500).send('Erro no servidor');
-    if(!user) return res.render('login', {erro: 'Usuário não encontrado'});
+  switch(botao){
+    case "agendamentos":
+      res.redirect('/agendamentos');
+      break;
+    case "pacientes":
+      res.redirect('/pacientes')
+      break;
+    case "medicos":
+      res.redirect('/medicos');
+      break;
+    case "prontuarios":
+      res.redirect('/prontuarios');
+      break;
+    case "configuracoes":
+      res.redirect('/configuracoes');
+      break;
+    default:
+      res.status(500).send("opção inválida");
+  }
+})
 
-    const senhaCorreta = await bcrypt.compare(password, user.password);
-    if(!senhaCorreta) return res.render('login', {erro: user.username});
-
-    req.session.user = {id: user.id, username: user.username};
-    return res.redirect('/menu');
-  });
-});
-
-function seeAuthentication(req, res, next){
-  if(!req.session.user) return res.redirect('/');
-  next();
-}
-
-app.get('/menu', seeAuthentication ,(req, res) => {
-  res.render('menu', { username: req.session.user.username });
-});
-
-app.get('/logout', (req, res) => {
-  req.session.destroy(() => {
-    res.redirect('/');
-  });
+app.get('/agendamentos', (req, res) => {
+  const agendamentos = [
+    { paciente: "João Silva", medico: "Dr. Pedro", data: "2025-02-10", horario: "14:00" },
+    { paciente: "Maria Oliveira", medico: "Dra. Ana", data: "2025-02-11", horario: "10:30" }
+  ];
+  
+  res.render("agendamentos", {agendamentos});
 })
 
 app.listen(3000, () => {
-  console.log('Servidor rodando na porta 3000');
-  console.log('http://localhost:3000');
+  console.log('Servidor rodando em http://localhost:3000');
 })
