@@ -38,7 +38,14 @@ app.post('/', (req, res) => {
 })
 
 app.get('/agendamentos', (req, res) => {
-  const query = 'SELECT * FROM consulta';
+  const query = `select consulta.idConsulta,
+                pacientes.nomeCompleto as paciente,
+                medico.nomeCompleto as medico,
+                consulta.dataConsulta
+                from consulta
+                join pacientes on consulta.idPacientes = pacientes.idPacientes
+                join medico on consulta.idMedico = medico.idMedico;
+     `;
 
   db.query(query, (err, result) => {
     if (err) {
