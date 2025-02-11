@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const path = require('path');
+const db = require('./config/db');
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
@@ -37,14 +38,19 @@ app.post('/', (req, res) => {
 })
 
 app.get('/agendamentos', (req, res) => {
-  const agendamentos = [
-    { paciente: "João Silva", medico: "Dr. Pedro", data: "2025-02-10", horario: "14:00" },
-    { paciente: "Maria Oliveira", medico: "Dra. Ana", data: "2025-02-11", horario: "10:30" }
-  ];
-  
-  res.render("agendamentos", {agendamentos});
-})
+  const query = 'SELECT * FROM consulta';
+
+  db.query(query, (err, result) => {
+    if (err) {
+      console.error("Erro ao buscar pacientes:", err.message);
+      return res.status(500).send('Erro ao buscar dados');
+    }
+
+    res.render("agendamentos", { query: result });
+  });
+});
+
 
 app.listen(3000, () => {
   console.log('Servidor rodando em http://localhost:3000');
-})
+});
